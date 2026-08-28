@@ -42,8 +42,8 @@
   <div id="placedBanner">✓ BC-6800 anclado a la mesa. Volvé a tocar para reubicar. Ajustá escala abajo.</div>
 
   <div id="scaleCtl">
-    <label>Escala del equipo: <span id="scaleVal">0.0010</span></label>
-    <input id="scaleRange" type="range" min="0.0003" max="0.0050" step="0.00005" value="0.0010" />
+    <label>Escala del equipo: <span id="scaleVal">1.00</span></label>
+    <input id="scaleRange" type="range" min="0.2" max="4.0" step="0.05" value="1.00" />
   </div>
 
   <div id="bottombar">
@@ -100,11 +100,11 @@ let hitTestSource=null, localSpace=null, viewerSpace=null;
 let stlGeom=null;
 let controller;
 let modelScale = parseFloat(scaleRange.value);
-scaleVal.textContent = modelScale.toFixed(4);
+scaleVal.textContent = modelScale.toFixed(2);
 
 function updateModelScale(newScale){
   modelScale = newScale;
-  scaleVal.textContent = modelScale.toFixed(4);
+  scaleVal.textContent = modelScale.toFixed(2);
   if (modelGroup) modelGroup.scale.setScalar(modelScale);
 }
 scaleRange.addEventListener('input', (e) => updateModelScale(parseFloat(e.target.value)));
@@ -177,10 +177,11 @@ async function loadSTLFromURL(url){
     geom.computeBoundingBox();
     stlGeom = geom;
 
-    // Auto escala inicial: el STL del BC-6800 esta en mm (valores ~200-1000 mm).
-    // Lo pasamos a metros AR: 1 metro = 1.0 en three. mm → m = 0.001.
-    updateModelScale(0.0010);
-    scaleRange.value = '0.0010';
+    // Auto escala inicial: el STL del BC-6800 ya fue exportado en METROS REALES
+    // (FreeCAD aplicó 0.001 mm→m en el script convert_stp_to_glb.py).
+    // Escala inicial = 1.0 (tamaño natural). Ajustable via slider (0.2x a 4.0x).
+    updateModelScale(1.0);
+    scaleRange.value = '1.0';
 
     centerHUD.classList.add('hide');
     btnStart.classList.remove('hide');

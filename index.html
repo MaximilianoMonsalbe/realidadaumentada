@@ -120,8 +120,30 @@ function flash(msg, durMs){
   flash._t = setTimeout(()=>centerHUD.classList.add('hide'), durMs || 3000);
 }
 btnBack.addEventListener('click', () => {
-  try { window.location.href = 'exp://'; } catch(e) {}
-  setTimeout(() => { try { window.history.back(); } catch {} }, 350);
+  const schemes = [
+    'catalogoar://ar-markerless',
+    'catalogoar://',
+    'exp://',
+    'expo-development-client://',
+  ];
+  let i = 0;
+  function tryNext(){
+    if (i >= schemes.length) {
+      try { window.history.back(); } catch {}
+      return;
+    }
+    const url = schemes[i++];
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { try { a.remove(); } catch {} }, 300);
+    } catch {}
+    setTimeout(tryNext, 450);
+  }
+  tryNext();
 });
 
 let renderer, scene, camera, xrSession=null;
